@@ -13,18 +13,14 @@ pipeline {
                 echo 'Tool used: JUnit for unit testing and Selenium for integration testing.'
             }
             post {
-                success {
-                    mail(
+                always {
+                    archiveArtifacts artifacts: '**/target/*.log', fingerprint: true
+                    emailext (
                         to: 'mouna200022@gmail.com',
-                        subject: 'Success: Unit and Integration Tests',
-                        body: 'All unit and integration tests passed successfully.'
-                    )
-                }
-                failure {
-                    mail(
-                        to: 'mouna200022@gmail.com',
-                        subject: 'Failure: Unit and Integration Tests',
-                        body: 'Some unit or integration tests failed. Please check the Jenkins console output for more details.'
+                        subject: "Jenkins - Unit and Integration Tests: ${currentBuild.currentResult}",
+                        body: """<p>Stage completed with status: ${currentBuild.currentResult}</p>
+                                 <p>Please find attached the logs for more details.</p>""",
+                        attachmentsPattern: '**/target/*.log'
                     )
                 }
             }
@@ -41,18 +37,14 @@ pipeline {
                 echo 'Tool used: OWASP Dependency Check- identifies project dependencies and checks if there are any known, publicly disclosed vulnerabilities.'
             }
             post {
-                success {
-                    mail(
+                always {
+                    archiveArtifacts artifacts: '**/security-reports/*.log', fingerprint: true
+                    emailext (
                         to: 'mouna200022@gmail.com',
-                        subject: 'Success: Security Scan',
-                        body: 'Security scan completed successfully without any issues.'
-                    )
-                }
-                failure {
-                    mail(
-                        to: 'mouna200022@gmail.com',
-                        subject: 'Failure: Security Scan',
-                        body: 'Security scan detected issues. Please check the Jenkins console output for more details.'
+                        subject: "Jenkins - Security Scan: ${currentBuild.currentResult}",
+                        body: """<p>Stage completed with status: ${currentBuild.currentResult}</p>
+                                 <p>Please find attached the logs for more details.</p>""",
+                        attachmentsPattern: '**/security-reports/*.log'
                     )
                 }
             }
